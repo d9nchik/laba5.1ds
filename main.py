@@ -65,70 +65,24 @@ def position_in_array(unvisited, searched_position):
     return -1
 
 
-def dijkstra_algorithm(adjacency_matrix, height):
+def dijkstra_algorithm_multiple(adjacency_matrix, height):
     matrix_of_unvisited = copy.deepcopy(adjacency_matrix)
     visited = []
     unvisited = [Heights(height, 0, None)]
     while len(unvisited) > 0:
         position_of_minimum = find_minimum_weight(unvisited)
         visited.append(unvisited[position_of_minimum])
-        close_height(matrix_of_unvisited, visited[-1].position)
-        del unvisited[position_of_minimum]
-        neighbours = find_neighbours(matrix_of_unvisited, visited[-1].position)
-        for x in neighbours:
-            position_of_neighbour = position_in_array(unvisited, x)
-            if position_of_neighbour == -1:
-                unvisited.append(
-                    Heights(x, matrix_of_unvisited[visited[-1].position][x] + visited[-1].weight, visited[-1].position))
-            elif unvisited[position_of_neighbour].weight > matrix_of_unvisited[visited[-1].position][
-                x] + visited[-1].weight:
-                unvisited[position_of_neighbour].weight = matrix_of_unvisited[visited[-1].position][
-                                                              x] + visited[-1].weight
-                unvisited[position_of_neighbour].father = visited[-1].position
-    return visited
+        dijkstra_algoritm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited)
+        return visited
 
 
-def show_path(dijkstra_data, size):
+def show_path_dijkstra_multiple(dijkstra_data, size):
     for x in range(size):
         path = [Heights(None, None, x)]
-        for y in range(len(dijkstra_data) - 1, 0, -1):
-            if path[-1].father == dijkstra_data[y].position:
-                path.append(dijkstra_data[y])
-        del path[0]
-        if len(path) != 0:
-            path.reverse()
-            for z in range(0, len(path)):
-                print(path[z].father + 1, end=" - > ")
-            print("%s Шлях = %s" % (path[-1].position + 1, path[-1].weight))
+        show_path_dijkstra_main_part(dijkstra_data, path)
 
 
-def dijkstra_algorithm_single(adjacency_matrix, height_start, height_finish):
-    matrix_of_unvisited = copy.deepcopy(adjacency_matrix)
-    visited = []
-    unvisited = [Heights(height_start, 0, None)]
-    while len(unvisited) > 0:
-        position_of_minimum = find_minimum_weight(unvisited)
-        visited.append(unvisited[position_of_minimum])
-        if height_finish == visited[-1].position:
-            break
-        close_height(matrix_of_unvisited, visited[-1].position)
-        del unvisited[position_of_minimum]
-        neighbours = find_neighbours(matrix_of_unvisited, visited[-1].position)
-        for x in neighbours:
-            position_of_neighbour = position_in_array(unvisited, x)
-            if position_of_neighbour == -1:
-                unvisited.append(
-                    Heights(x, matrix_of_unvisited[visited[-1].position][x] + visited[-1].weight, visited[-1].position))
-            elif unvisited[position_of_neighbour].weight > matrix_of_unvisited[visited[-1].position][
-                x] + visited[-1].weight:
-                unvisited[position_of_neighbour].weight = matrix_of_unvisited[visited[-1].position][
-                                                              x] + visited[-1].weight
-                unvisited[position_of_neighbour].father = visited[-1].position
-    return visited
-
-
-def show_path_dijkstra_single(dijkstra_data):
-    path = [Heights(None, None, dijkstra_data[-1].position)]
+def show_path_dijkstra_main_part(dijkstra_data, path):
     for y in range(len(dijkstra_data) - 1, 0, -1):
         if path[-1].father == dijkstra_data[y].position:
             path.append(dijkstra_data[y])
@@ -140,6 +94,40 @@ def show_path_dijkstra_single(dijkstra_data):
         print("%s Шлях = %s" % (path[-1].position + 1, path[-1].weight))
 
 
+def dijkstra_algorithm_single(adjacency_matrix, height_start, height_finish):
+    matrix_of_unvisited = copy.deepcopy(adjacency_matrix)
+    visited = []
+    unvisited = [Heights(height_start, 0, None)]
+    while len(unvisited) > 0:
+        position_of_minimum = find_minimum_weight(unvisited)
+        visited.append(unvisited[position_of_minimum])
+        if height_finish == visited[-1].position:
+            break
+        dijkstra_algoritm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited)
+    return visited
+
+
+def dijkstra_algoritm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited):
+    close_height(matrix_of_unvisited, visited[-1].position)
+    del unvisited[position_of_minimum]
+    neighbours = find_neighbours(matrix_of_unvisited, visited[-1].position)
+    for x in neighbours:
+        position_of_neighbour = position_in_array(unvisited, x)
+        if position_of_neighbour == -1:
+            unvisited.append(
+                Heights(x, matrix_of_unvisited[visited[-1].position][x] + visited[-1].weight, visited[-1].position))
+        elif unvisited[position_of_neighbour].weight > matrix_of_unvisited[visited[-1].position][x] \
+                + visited[-1].weight:
+            unvisited[position_of_neighbour].weight = matrix_of_unvisited[visited[-1].position][
+                                                          x] + visited[-1].weight
+            unvisited[position_of_neighbour].father = visited[-1].position
+
+
+def show_path_dijkstra_single(dijkstra_data):
+    path = [Heights(None, None, dijkstra_data[-1].position)]
+    show_path_dijkstra_main_part(dijkstra_data, path)
+
+
 matrix_of_adjacency = create_adjacency_matrix(get_data())
 
 print(
@@ -147,11 +135,12 @@ print(
     "заданої вершини до всіх інших вершин(2)")
 choice = int(input("Варіант: "))
 if choice == 1:
-    heightStart = int(input("Введіть вершину початку: "))-1
-    heightFinish = int(input("Введіть вершину кінця: "))-1
+    heightStart = int(input("Введіть вершину початку: ")) - 1
+    heightFinish = int(input("Введіть вершину кінця: ")) - 1
     show_path_dijkstra_single(dijkstra_algorithm_single(matrix_of_adjacency, heightStart, heightFinish))
 elif choice == 2:
     heightStart = int(input("Введіть вершину початку: "))
-    show_path(dijkstra_algorithm(matrix_of_adjacency, heightStart - 1), len(matrix_of_adjacency))
+    show_path_dijkstra_multiple(dijkstra_algorithm_multiple(matrix_of_adjacency, heightStart - 1),
+                                len(matrix_of_adjacency))
 else:
     print("Неправильні дані!")
