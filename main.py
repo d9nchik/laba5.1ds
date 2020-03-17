@@ -90,17 +90,24 @@ def dijkstra_algorithm(adjacency_matrix, height):
 
 def show_path(dijkstra_data, size):
     for x in range(size):
-        path = [x]
-        for y in range(len(dijkstra_data)-1, 0, -1):
-            if path[-1] == dijkstra_data[y].position:
-                path.append(dijkstra_data[y].father)
-        if len(path) != 1:
+        path = [Heights(None, None, x)]
+        for y in range(len(dijkstra_data) - 1, 0, -1):
+            if path[-1].father == dijkstra_data[y].position:
+                path.append(dijkstra_data[y])
+        del path[0]
+        if len(path) != 0:
             path.reverse()
-            for z in path:
-                print(z+1, end=" - > ")
-            print()
+            for z in range(0, len(path)):
+                print(path[z].father + 1, end=" - > ")
+            print("%s Шлях = %s" % (path[-1].position + 1, path[-1].weight))
 
 
 matrix_of_adjacency = create_adjacency_matrix(get_data())
-for x in range(len(matrix_of_adjacency)):
-    show_path(dijkstra_algorithm(matrix_of_adjacency, x), len(matrix_of_adjacency))
+
+print(
+    "Визначити найкоротший маршрут між двома вершинами та його довжину(1) чи Визначити найкоротшу відстань від "
+    "заданої вершини до всіх інших вершин(2)")
+choice = int(input("Варіант: "))
+if choice == 2:
+    height_start = int(input("Введіть вершину початку: "))
+    show_path(dijkstra_algorithm(matrix_of_adjacency, height_start - 1), len(matrix_of_adjacency))
