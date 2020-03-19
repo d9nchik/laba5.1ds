@@ -15,9 +15,7 @@ def get_data():
             line = iFile.readline()
             if not line:
                 break
-            temp = (line[:len(line)] + line[len(line) + 1:]).split()
-            for x in range(len(temp)):
-                temp[x] = int(temp[x])
+            temp = list(map(int, (line[:len(line)] + line[len(line) + 1:]).split()))
             e_data.append(temp)
             print(line, end='')
         print()
@@ -72,7 +70,7 @@ def dijkstra_algorithm_multiple(adjacency_matrix, height):
     while len(unvisited) > 0:
         position_of_minimum = find_minimum_weight(unvisited)
         visited.append(unvisited[position_of_minimum])
-        dijkstra_algoritm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited)
+        dijkstra_algorithm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited)
         return visited
 
 
@@ -103,11 +101,11 @@ def dijkstra_algorithm_single(adjacency_matrix, height_start, height_finish):
         visited.append(unvisited[position_of_minimum])
         if height_finish == visited[-1].position:
             break
-        dijkstra_algoritm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited)
+        dijkstra_algorithm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited)
     return visited
 
 
-def dijkstra_algoritm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited):
+def dijkstra_algorithm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited):
     close_height(matrix_of_unvisited, visited[-1].position)
     del unvisited[position_of_minimum]
     neighbours = find_neighbours(matrix_of_unvisited, visited[-1].position)
