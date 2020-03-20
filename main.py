@@ -126,19 +126,74 @@ def show_path_dijkstra_single(dijkstra_data):
     show_path_dijkstra_main_part(dijkstra_data, path)
 
 
-matrix_of_adjacency = create_adjacency_matrix(get_data())
+def create_floyd_distance_matrix(e_data):
+    matrix = [0] * e_data[0][0]
+    for x in range(e_data[0][0]):
+        matrix[x] = [float('inf')] * e_data[0][0]
 
-print(
-    "Визначити найкоротший маршрут між двома вершинами та його довжину(1) чи Визначити найкоротшу відстань від "
-    "заданої вершини до всіх інших вершин(2)")
+    for y in range(1, len(e_data)):
+        matrix[e_data[y][0] - 1][e_data[y][1] - 1] = e_data[y][2]
+    for x in range(len(matrix)):
+        matrix[x][x] = 0
+    return matrix
+
+
+def create_floyd_history_matrix(size):
+    matrix = [0] * size
+    for x in range(size):
+        matrix[x] = [x + 1] * size
+    for y in range(size):
+        matrix[y][y] = 0
+    return matrix
+
+
+def floyd_algorithm(e_data):
+    distance_matrix_floyd = create_floyd_distance_matrix(e_data)
+    size = len(distance_matrix_floyd)
+    history_matrix_floyd = create_floyd_history_matrix(size)
+    for x in range(size):
+        for y in range(size):
+            for z in range(size):
+                if distance_matrix_floyd[y][z] > distance_matrix_floyd[y][x] + distance_matrix_floyd[x][z]:
+                    distance_matrix_floyd[y][z] = distance_matrix_floyd[y][x] + distance_matrix_floyd[x][z]
+                    history_matrix_floyd[y][z] = x + 1
+    for i in range(size):
+        if history_matrix_floyd[i][i] != 0:
+            print("У матриці не можуть бути від'ємні цикли: ")
+            exit(2)
+    return history_matrix_floyd, distance_matrix_floyd
+
+
+def show_matrix(matrix):
+    for i in matrix:
+        for j in i:
+            print("%3d" % j, end=" ")
+        print()
+
+
+print("Виберіть алгоритм Дейкстра(1), Флойда-Уоршела(2)")
 choice = int(input("Варіант: "))
 if choice == 1:
-    heightStart = int(input("Введіть вершину початку: ")) - 1
-    heightFinish = int(input("Введіть вершину кінця: ")) - 1
-    show_path_dijkstra_single(dijkstra_algorithm_single(matrix_of_adjacency, heightStart, heightFinish))
+    matrix_of_adjacency = create_adjacency_matrix(get_data())
+    print(
+        "Визначити найкоротший маршрут між двома вершинами та його довжину(1) чи Визначити найкоротшу відстань від "
+        "заданої вершини до всіх інших вершин(2)")
+    choice = int(input("Варіант: "))
+    if choice == 1:
+        heightStart = int(input("Введіть вершину початку: ")) - 1
+        heightFinish = int(input("Введіть вершину кінця: ")) - 1
+        show_path_dijkstra_single(dijkstra_algorithm_single(matrix_of_adjacency, heightStart, heightFinish))
+    elif choice == 2:
+        heightStart = int(input("Введіть вершину початку: "))
+        show_path_dijkstra_multiple(dijkstra_algorithm_multiple(matrix_of_adjacency, heightStart - 1),
+                                    len(matrix_of_adjacency))
+    else:
+        print("Неправильні дані!")
 elif choice == 2:
-    heightStart = int(input("Введіть вершину початку: "))
-    show_path_dijkstra_multiple(dijkstra_algorithm_multiple(matrix_of_adjacency, heightStart - 1),
-                                len(matrix_of_adjacency))
+    history_matrix, distance_matrix = floyd_algorithm(get_data())
+    print("Матриця історій: ")
+    show_matrix(history_matrix)
+    print("Матриця відстаней: ")
+    show_matrix(distance_matrix)
 else:
-    print("Неправильні дані!")
+    print("Неправильний ввід")
