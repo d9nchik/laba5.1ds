@@ -171,10 +171,19 @@ def show_matrix(matrix):
         print()
 
 
+def show_floyd_path(floyd_history_matrix, start_point, end_point):
+    previous_point = float('inf')
+    while start_point != previous_point:
+        print(start_point, end="->")
+        previous_point = start_point
+        start_point = floyd_history_matrix[start_point - 1][end_point - 1]
+    print(end_point)
+
+
 print("Виберіть алгоритм Дейкстра(1), Флойда-Уоршела(2)")
 choice = int(input("Варіант: "))
 if choice == 1:
-    matrix_of_adjacency = create_adjacency_matrix(get_data())
+    matrixOfAdjacency = create_adjacency_matrix(get_data())
     print(
         "Визначити найкоротший маршрут між двома вершинами та його довжину(1) чи Визначити найкоротшу відстань від "
         "заданої вершини до всіх інших вершин(2)")
@@ -182,18 +191,24 @@ if choice == 1:
     if choice == 1:
         heightStart = int(input("Введіть вершину початку: ")) - 1
         heightFinish = int(input("Введіть вершину кінця: ")) - 1
-        show_path_dijkstra_single(dijkstra_algorithm_single(matrix_of_adjacency, heightStart, heightFinish))
+        show_path_dijkstra_single(dijkstra_algorithm_single(matrixOfAdjacency, heightStart, heightFinish))
     elif choice == 2:
         heightStart = int(input("Введіть вершину початку: "))
-        show_path_dijkstra_multiple(dijkstra_algorithm_multiple(matrix_of_adjacency, heightStart - 1),
-                                    len(matrix_of_adjacency))
+        show_path_dijkstra_multiple(dijkstra_algorithm_multiple(matrixOfAdjacency, heightStart - 1),
+                                    len(matrixOfAdjacency))
     else:
         print("Неправильні дані!")
 elif choice == 2:
-    history_matrix, distance_matrix = floyd_algorithm(get_data())
+    historyMatrix, distanceMatrix = floyd_algorithm(get_data())
     print("Матриця історій: ")
-    show_matrix(history_matrix)
+    show_matrix(historyMatrix)
     print("Матриця відстаней: ")
-    show_matrix(distance_matrix)
+    show_matrix(distanceMatrix)
+    choice = input("Бажаєте визначити шлях від довільної до довільної точки(т, н): ")
+    if choice != 'н':
+        startPoint = int(input("Введіть початкову точку: "))
+        endPoint = int(input("Введіть кінцеву точку: "))
+        print("Ваш шлях: ")
+        show_floyd_path(historyMatrix, startPoint, endPoint)
 else:
     print("Неправильний ввід")
