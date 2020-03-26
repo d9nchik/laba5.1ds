@@ -71,7 +71,7 @@ def dijkstra_algorithm_multiple(adjacency_matrix, height):
         position_of_minimum = find_minimum_weight(unvisited)
         visited.append(unvisited[position_of_minimum])
         dijkstra_algorithm_main_part(matrix_of_unvisited, position_of_minimum, unvisited, visited)
-        return visited
+    return visited
 
 
 def show_path_dijkstra_multiple(dijkstra_data, size):
